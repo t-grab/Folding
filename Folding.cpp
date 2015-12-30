@@ -5,17 +5,17 @@
 #include "Folding.hpp"
 
 Folding::Folding(uint n) : genotype(n) {
-    std::uniform_int_distribution dist(0, 2);
+    std::uniform_int_distribution<int> dist(0, 2);
 
     for (auto& direction : genotype)
-        direction = Position::Direction(dist(Evo::generator));
+        direction = Grid::Move(dist(Evo::generator));
 }
 
-vector<Position::Direction>::iterator Folding::begin() {
+vector<Grid::Move>::iterator Folding::begin() {
     return genotype.begin();
 }
 
-vector<Position::Direction>::iterator Folding::end() {
+vector<Grid::Move>::iterator Folding::end() {
     return genotype.end();
 }
 

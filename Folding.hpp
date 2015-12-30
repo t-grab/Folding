@@ -5,22 +5,21 @@
 #ifndef FOLDING_FOLDING_HPP
 #define FOLDING_FOLDING_HPP
 
-#include <string>
-using std::vector;
 #include <evo.hpp>
+using std::vector;
 
-#include "Position.hpp"
+#include "Grid.hpp"
 
 class Folding {
 public:
     Folding(uint);
 
-    vector<Position::Direction>::iterator begin();
-    vector<Position::Direction>::iterator end();
+    vector<Grid::Move>::iterator begin();
+    vector<Grid::Move>::iterator end();
 
     void draw() const;
 private:
-    vector<Position::Direction> genotype;
+    vector<Grid::Move> genotype;
 };
 
 #endif //FOLDING_FOLDING_HPP
