@@ -4,15 +4,24 @@
 
 #include "Grid.hpp"
 
+// SUPPORT FUNCTIONS
+
 int inline mod(int a, int b) {
     return (a % b + b) % b;
 }
 
+// POINT IMPLEMENTATION
 
 Point::Point() : x(0), y(0) {}
 
 Point::Point(int ix, int iy) : x(ix), y(iy) {}
 
+bool Point::operator<(const Point& p) const {
+    if (x != p.x) return x < p.x;
+    else return y < p.y;
+}
+
+// GRID IMPLEMENTATION
 
 std::vector<Point> Grid::offsetVectors = { Point(0, 1), Point(1, 0), Point(0, -1), Point(-1, 0) };
 
@@ -31,6 +40,8 @@ Point Grid::move(Grid::Move move) {
 
     pos.x += offsetVectors[dir].x;
     pos.y += offsetVectors[dir].y;
+
+    return pos;
 }
 
 std::vector<Point> Grid::neighbours() const {

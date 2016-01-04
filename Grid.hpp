@@ -13,6 +13,8 @@ struct Point {
     Point();
     Point(int, int);
 
+    bool operator<(const Point& p) const;
+
     int x;
     int y;
 };
