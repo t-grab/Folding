@@ -7,30 +7,47 @@
 
 #include <array>
 using std::array;
+
 #include <iostream>
 using std::ostream;
+
 #include <string>
 using std::string;
+
 #include <memory>
 using std::shared_ptr;
+
 #include <map>
 using std::map;
+
 #include <evo.hpp>
 using std::vector;
+
+#include <limits>
+using std::numeric_limits;
 
 #include "Grid.hpp"
 #include "Matrix.hpp"
 
 class Folding {
 public:
-    Folding(shared_ptr<string>);
+    explicit Folding(shared_ptr<string> = 0);
 
-    vector<Grid::Move>::iterator begin();
-    vector<Grid::Move>::iterator end();
+    typedef vector<Grid::Move>::iterator iterator;
+    typedef vector<Grid::Move>::const_iterator const_iterator;
 
-    double fitness();
+    iterator begin();
+    iterator end();
+    const_iterator cbegin() const;
+    const_iterator cend() const;
+
+    uint size() const;
+    bool operator==(const Folding& folding) const;
+
+    double fitness() const;
     double recalculate_fitness();
 
+    friend ostream& operator<<(ostream&, const Folding&);
     void draw(ostream& = std::cout) const;
 
 private:
@@ -40,5 +57,20 @@ private:
 
     static char HYDROPHOBIC;
 };
+
+namespace std {
+    template<>
+    struct hash<Folding> {
+        size_t operator()(const Folding& fold) const noexcept {
+            const unsigned long limit = numeric_limits<size_t>::max();
+            unsigned long hash = 0LU;
+
+            for (auto gene_itr = fold.cbegin(); gene_itr != fold.cend(); std::advance(gene_itr, 1))
+                hash = (hash * 31 + *gene_itr) % limit;
+
+            return static_cast<size_t>(hash);
+        }
+    };
+}
 
 #endif //FOLDING_FOLDING_HPP

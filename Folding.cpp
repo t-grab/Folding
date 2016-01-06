@@ -7,7 +7,7 @@
 char Folding::HYDROPHOBIC = '1';
 
 Folding::Folding(shared_ptr<string> chain_ptr)
-        : genotype(chain_ptr->length() - 1),
+        : genotype(chain_ptr != 0 ? chain_ptr->length() - 1 : 0),
           cached_fitness(-1),
           protein_chain(chain_ptr)
 {
@@ -15,6 +15,9 @@ Folding::Folding(shared_ptr<string> chain_ptr)
 
     for (auto& direction : genotype)
         direction = Grid::Move(dist(Evo::generator));
+
+    if (chain_ptr != 0)
+        recalculate_fitness();
 }
 
 vector<Grid::Move>::iterator Folding::begin() {
@@ -23,6 +26,29 @@ vector<Grid::Move>::iterator Folding::begin() {
 
 vector<Grid::Move>::iterator Folding::end() {
     return genotype.end();
+}
+
+vector<Grid::Move>::const_iterator Folding::cbegin() const {
+    return genotype.cbegin();
+}
+
+vector<Grid::Move>::const_iterator Folding::cend() const {
+    return genotype.cend();
+}
+
+uint Folding::size() const {
+    return genotype.size();
+}
+
+bool Folding::operator==(const Folding& folding) const {
+    if (genotype.size() != folding.size())
+        return false;
+
+    for (uint i = 0U; i < genotype.size(); ++i)
+        if (genotype.at(i) != folding.genotype.at(i))
+            return false;
+
+    return true;
 }
 
 void Folding::draw(ostream& out) const {
@@ -72,11 +98,13 @@ void Folding::draw(ostream& out) const {
     }
 }
 
-double Folding::fitness() {
-    if (cached_fitness < 0)
-        return recalculate_fitness();
-    else
-        return cached_fitness;
+ostream& operator<<(ostream& stream, const Folding& folding) {
+    folding.draw(stream);
+    return stream;
+}
+
+double Folding::fitness() const {
+    return cached_fitness;
 }
 
 double Folding::recalculate_fitness() {
@@ -106,7 +134,7 @@ double Folding::recalculate_fitness() {
                 ++num_neighbours;
     }
 
-    cached_fitness = num_neighbours / (1 + std::pow(num_overlaps, 3));
+    cached_fitness = (1.0 + std::pow(num_neighbours, 2)) / (1.0 + std::pow(num_overlaps, 4));
 
     return cached_fitness;
 }
