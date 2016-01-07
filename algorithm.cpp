@@ -4,9 +4,9 @@
 
 #include "algorithm.hpp"
 
-Result<Folding, double> solve(shared_ptr<string> protein, uint pop_size, uint max_gen, double c_rate, double m_rate) {
+Result<Folding, double, double> solve(shared_ptr<string> protein, uint pop_size, uint max_gen, double c_rate, double m_rate) {
     vector<Folding> population = init(pop_size, protein);
-    Result<Folding, double> result;
+    Result<Folding, double, double> result;
 
     for (uint gen = 0U; gen < max_gen; ++gen) {
         std::vector<Folding> parents(pop_size);
@@ -44,7 +44,7 @@ Result<Folding, double> solve(shared_ptr<string> protein, uint pop_size, uint ma
             if (folding.fitness() == max_fitness)
                 best.push_back(folding);
 
-        result.add_generation(max_fitness, avg_fitness, best.begin(), best.end());
+        result.add_generation(max_fitness, avg_fitness, calc_avg_distance(best), best.begin(), best.end());
 
         population.clear();
         population = parents;
@@ -71,4 +71,18 @@ Grid::Move replace(size_t idx, Grid::Move move) {
 
 double accumulate_fitness(double acc, const Folding& folding) {
     return acc + folding.fitness();
+}
+
+double calc_avg_distance(const vector<Folding>& solutions) {
+    if (solutions.size() < 2U)
+        return 0.0;
+
+    uint size = solutions.size();
+    double sum = 0.0;
+
+    for (uint i = 0U; i < size; ++i)
+        for (uint j = i + 1; j < size; ++j)
+            sum += solutions.at(i).hamming_distance(solutions.at(j));
+
+    return sum / (size * (size - 1) / 2);
 }

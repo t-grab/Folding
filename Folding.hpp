@@ -44,6 +44,7 @@ public:
     uint size() const;
     bool operator==(const Folding&) const;
     bool operator<(const Folding&) const;
+    uint hamming_distance(const Folding&) const;
 
     double fitness() const;
     double recalculate_fitness();

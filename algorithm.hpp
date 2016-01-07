@@ -12,11 +12,12 @@ using namespace Evo;
 
 #include "Folding.hpp"
 
-Result<Folding, double> solve(shared_ptr<string> protein, uint pop_size, uint max_gen, double c_rate, double m_rate);
+Result<Folding, double, double> solve(shared_ptr<string> protein, uint pop_size, uint max_gen, double c_rate, double m_rate);
 
 vector<Folding> init(uint population_size, shared_ptr<string> protein);
 double fitness(const Folding& folding);
 Grid::Move replace(size_t idx, Grid::Move move);
 double accumulate_fitness(double acc, const Folding& folding);
+double calc_avg_distance(const vector<Folding>& population);
 
 #endif //FOLDING_ALGORITHM_HPP

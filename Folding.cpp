@@ -55,6 +55,18 @@ bool Folding::operator<(const Folding& folding) const {
     return cached_fitness < folding.cached_fitness;
 }
 
+uint Folding::hamming_distance(const Folding& folding) const {
+    if (genotype.size() != folding.size())
+        throw std::runtime_error("Folding::hamming_distance(): Different lengths!");
+
+    uint distance = 0U;
+    for (uint i = 0LU; i < genotype.size(); ++i)
+        if (genotype.at(i) != folding.genotype.at(i))
+            ++distance;
+
+    return distance;
+}
+
 void Folding::draw(ostream& out) const {
     Grid grid;
     vector<Point> coords = { grid.position() };
