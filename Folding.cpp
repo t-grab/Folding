@@ -51,6 +51,10 @@ bool Folding::operator==(const Folding& folding) const {
     return true;
 }
 
+bool Folding::operator<(const Folding& folding) const {
+    return cached_fitness < folding.cached_fitness;
+}
+
 void Folding::draw(ostream& out) const {
     Grid grid;
     vector<Point> coords = { grid.position() };

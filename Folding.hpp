@@ -42,7 +42,8 @@ public:
     const_iterator cend() const;
 
     uint size() const;
-    bool operator==(const Folding& folding) const;
+    bool operator==(const Folding&) const;
+    bool operator<(const Folding&) const;
 
     double fitness() const;
     double recalculate_fitness();
