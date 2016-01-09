@@ -19,7 +19,7 @@ struct Fitness {
     double operator()(const Folding& folding);
 };
 
-Grid::Move replace(size_t idx, Grid::Move move);
+Grid::Move replace(const Folding& folding, vector<Grid::Move>::iterator iter);
 
 void add_generation_result(Result<Folding, double, Diversity>& result, const vector<Folding>& solutions, uint pop_size, bool measure_diversity);
 double accumulate_fitness(double acc, const Folding& folding);

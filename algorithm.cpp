@@ -15,9 +15,9 @@ double Fitness::operator()(const Folding& folding) {
     return folding.fitness();
 }
 
-Grid::Move replace(size_t idx, Grid::Move move) {
+Grid::Move replace(const Folding& folding, vector<Grid::Move>::iterator iter) {
     std::uniform_int_distribution<size_t> dist(1, 2);
-    return Grid::Move((dist(generator) + (move + 1)) % 3 - 1);
+    return Grid::Move((dist(generator) + (*iter + 1)) % 3 - 1);
 }
 
 void add_generation_result(Result<Folding, double, Diversity>& result, const vector<Folding>& solutions, uint pop_size, bool measure_diversity) {

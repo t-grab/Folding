@@ -9,12 +9,12 @@ const string SEQ50 = "11010101011110100010001000010001000101111010101011";
 
 int main() {
     try {
-        string chain = SEQ20;
+        string chain = SEQ50;
 
-        uint population_size = 200;
-        uint max_generations = 100;
-        double crossover_rate = 0.2;
-        double mutation_rate = 0.03;
+        uint population_size = 400;
+        uint max_generations = 150;
+        double crossover_rate = 0.15;
+        double mutation_rate = 0.08;
 
         uint tournament_size = 20;
 
@@ -23,10 +23,10 @@ int main() {
 
         shared_ptr<string> protein = std::make_shared<string>(chain);
 
-        select::FitnessProportional<Fitness, select::Roulette_Wheel<double>> fitnessProportional(population_size, Fitness(), select::Roulette_Wheel<double>());
-        select::Tournament<Fitness> tournament(population_size, tournament_size, Fitness());
+        selector::fitness_proportional<Fitness, select::SUS<double>> proportional(population_size, Fitness(), select::SUS<double>(population_size));
+        selector::tournament<Fitness> tournament(population_size, tournament_size, Fitness());
 
-        auto result = solve(protein, 200, 100, tournament, true, 0.2, 0.03);
+        auto result = solve(protein, population_size, max_generations, tournament, false, crossover_rate, mutation_rate);
         result.print();
 
         for (auto solution : result.fittest()) {
