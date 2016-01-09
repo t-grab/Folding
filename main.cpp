@@ -11,12 +11,22 @@ int main() {
     try {
         string chain = SEQ20;
 
+        uint population_size = 200;
+        uint max_generations = 100;
+        double crossover_rate = 0.2;
+        double mutation_rate = 0.03;
+
+        uint tournament_size = 20;
+
         std::cout << "Folding in 2D HP" << std::endl
                   << "Used chain: " << chain << std::endl;
 
         shared_ptr<string> protein = std::make_shared<string>(chain);
 
-        auto result = solve(protein, 200, 100, 0.2, 0.03);
+        select::FitnessProportional<Fitness, select::Roulette_Wheel<double>> fitnessProportional(population_size, Fitness(), select::Roulette_Wheel<double>());
+        select::Tournament<Fitness> tournament(population_size, tournament_size, Fitness());
+
+        auto result = solve(protein, 200, 100, tournament, true, 0.2, 0.03);
         result.print();
 
         for (auto solution : result.fittest()) {
