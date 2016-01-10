@@ -6,7 +6,7 @@
 
 Application::Application() : Menu("Foldings for the 2D-HP-model", 0),
     running(true), protein("10100110100101100101"), population_size(200), max_generations(100), selection(Tournament),
-    tournament_size(20), crossover_rate(0.2), mutation_rate(0.05), measure_diversity(false), verbose_output(true)
+    tournament_size(20), crossover_rate(0.2), mutation_rate(0.05), measure_diversity(false), verbose_output(true), max_runtime(60.0)
 {
     auto run_func = [&]() { run(); };
     auto calc_params_func = [&]() { calculate_params(); };
@@ -26,6 +26,7 @@ Application::Application() : Menu("Foldings for the 2D-HP-model", 0),
             settings->add_submenu(new Parameter<double>("Mutation rate", settings, mutation_rate));
             settings->add_submenu(new Parameter<bool>("Measure Diversity", settings, measure_diversity));
             settings->add_submenu(new Parameter<bool>("Verbose output", settings, verbose_output));
+            settings->add_submenu(new Parameter<double>("Maximum running time", settings, max_runtime));
     add_submenu(settings);
 }
 
@@ -57,12 +58,12 @@ void Application::run() {
     switch(selection) {
         case FitnessProportional: {
             selector::fitness_proportional<Fitness, select::SUS<double>> proportional(population_size, Fitness(), select::SUS<double>(population_size));
-            result = solve(ptr, population_size, max_generations, proportional, measure_diversity, crossover_rate, mutation_rate);
+            result = solve(ptr, population_size, max_generations, proportional, measure_diversity, crossover_rate, mutation_rate, max_runtime);
             break;
         }
         case Tournament: {
             selector::tournament<Fitness> tournament(population_size, tournament_size, Fitness());
-            result = solve(ptr, population_size, max_generations, tournament, measure_diversity, crossover_rate, mutation_rate);
+            result = solve(ptr, population_size, max_generations, tournament, measure_diversity, crossover_rate, mutation_rate, max_runtime);
             break;
         }
         default:

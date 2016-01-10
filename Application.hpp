@@ -34,6 +34,7 @@ private:
     double mutation_rate;
     bool measure_diversity;
     bool verbose_output;
+    double max_runtime;
 };
 
 // Settings
