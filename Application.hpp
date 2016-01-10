@@ -5,6 +5,10 @@
 #ifndef FOLDING_CONTROL_HPP
 #define FOLDING_CONTROL_HPP
 
+#include <iostream>
+#include <fstream>
+using std::ifstream;
+
 #include "algorithm.hpp"
 #include "Menu.hpp"
 
@@ -20,6 +24,8 @@ public:
 
     void run();
     void calculate_params();
+
+    void load_config();
 private:
     Application();
 
@@ -37,7 +43,15 @@ private:
     double max_runtime;
 };
 
-// Settings
-// Exit
+template<typename T>
+T read(ifstream& stream) {
+    T value;
+    stream >> value;
+
+    if (!stream)
+        throw runtime_error("read(): Could not read value from stream");
+
+    return value;
+}
 
 #endif //FOLDING_CONTROL_HPP

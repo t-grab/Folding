@@ -10,6 +10,7 @@ Application::Application() : Menu("Foldings for the 2D-HP-model", 0),
 {
     auto run_func = [&]() { run(); };
     auto calc_params_func = [&]() { calculate_params(); };
+    auto load_config_func = [&]() { load_config(); };
 
     add_submenu(make_action("Run", this, run_func));
     add_submenu(make_action("Calculate Parameters", this, calc_params_func));
@@ -28,6 +29,9 @@ Application::Application() : Menu("Foldings for the 2D-HP-model", 0),
             settings->add_submenu(new Parameter<bool>("Verbose output", settings, verbose_output));
             settings->add_submenu(new Parameter<double>("Maximum running time", settings, max_runtime));
     add_submenu(settings);
+    add_submenu(make_action("Reload config file", this, load_config_func));
+
+    load_config();
 }
 
 Application& Application::get_instance() {
@@ -79,4 +83,54 @@ void Application::run() {
 
 void Application::calculate_params() {
 
+}
+
+void Application::load_config() {
+    ifstream config;
+    config.open("config");
+
+    if (!config)
+        throw runtime_error("Application::load_config: config file could not be opened");
+
+    read<string>(config);
+    protein = read<string>(config);
+
+    read<string>(config);
+    population_size = read<uint>(config);
+
+    read<string>(config);
+    max_generations = read<uint>(config);
+
+    read<string>(config);
+    char sel = read<char>(config);
+    switch(sel) {
+        case 'T':
+            selection = Tournament;
+            break;
+        case 'F':
+            selection = FitnessProportional;
+            break;
+        default:
+            throw runtime_error("Application::load_config(): unknown selection strategy read from config file");
+    }
+
+    read<string>(config);
+    tournament_size = read<uint>(config);
+
+    read<string>(config);
+    crossover_rate = read<double>(config);
+
+    read<string>(config);
+    mutation_rate = read<double>(config);
+
+    read<string>(config);
+    measure_diversity = read<bool>(config);
+
+    read<string>(config);
+    verbose_output = read<bool>(config);
+
+    read<string>(config);
+    max_runtime = read<double>(config);
+
+    config.close();
 }
