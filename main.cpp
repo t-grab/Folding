@@ -1,4 +1,5 @@
-#include "algorithm.hpp"
+#include "Application.hpp"
+#include <limits>
 
 const string SEQ20 = "10100110100101100101";
 const string SEQ24 = "110010010010010010010011";
@@ -9,30 +10,24 @@ const string SEQ50 = "11010101011110100010001000010001000101111010101011";
 
 int main() {
     try {
-        string chain = SEQ50;
+        Application& app = Application::get_instance();
+        app.enter();
 
-        uint population_size = 400;
-        uint max_generations = 150;
-        double crossover_rate = 0.15;
-        double mutation_rate = 0.08;
+        while (app.is_running()) {
+            uint command = 0;
 
-        uint tournament_size = 20;
+            cin >> command;
+            while (!cin) {
+                cout << "There was a problem reading the input!" << std::endl
+                     << "Try again: ";
 
-        std::cout << "Folding in 2D HP" << std::endl
-                  << "Used chain: " << chain << std::endl;
+                cin.clear();
+                cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-        shared_ptr<string> protein = std::make_shared<string>(chain);
+                cin >> command;
+            }
 
-        selector::fitness_proportional<Fitness, select::SUS<double>> proportional(population_size, Fitness(), select::SUS<double>(population_size));
-        selector::tournament<Fitness> tournament(population_size, tournament_size, Fitness());
-
-        auto result = solve(protein, population_size, max_generations, tournament, false, crossover_rate, mutation_rate);
-        result.print();
-
-        for (auto solution : result.fittest()) {
-            solution.recalculate_fitness();
-            std::cout << "Fitness: " << solution.fitness() << std::endl
-                      << solution;
+            app.move_down(command);
         }
 
         return 0;

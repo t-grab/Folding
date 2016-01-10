@@ -12,51 +12,114 @@ using std::vector;
 #include <iostream>
 using std::cout;
 using std::cin;
-#include <utility>
-using std::pair;
 #include <stdexcept>
 using std::runtime_error;
 using std::out_of_range;
+#include <sstream>
+typedef std::stringstream sstream;
+#include <iomanip>
 
 typedef unsigned int uint;
 
 class Interactive {
 public:
-    Interactive(const string&);
+    explicit Interactive(const string&);
+    virtual ~Interactive();
 
     virtual string get_title() const;
 
-    virtual void print_options() const = 0;
-    virtual void go_to(uint) = 0;
-    virtual void go_back() = 0;
+    virtual void enter() = 0;
+    virtual void move_down(uint) = 0;
+    virtual void move_up() = 0;
 private:
     string title;
 };
 
 class Menu : public Interactive {
 public:
-    explicit Menu(const string&, Menu*);
+    Menu(const string&, Menu*);
+    ~Menu();
 
-    void print_options() const;
-    void go_to(uint);
-    void go_back();
+    void enter();
+    void move_down(uint);
+    void move_up();
+
     void add_submenu(Interactive*);
+    const vector<Interactive*>& get_submenus() const;
+    bool is_active() const;
+protected:
+    void print_option(uint, const string&) const;
 private:
     vector<Interactive*> submenus;
     Interactive* active;
     Menu* parent;
 };
 
-class MenuLeaf : public Interactive {
+class BidirectionalMenu : public Menu {
 public:
-    explicit MenuLeaf(const string&, Menu*);
+    BidirectionalMenu(const string&, Menu*);
 
-    void print_options() const;
-    void go_to(uint);
-    void go_back();
-    void add_action(const string&, void (*)());
+    void enter();
+    void move_down(uint);
+};
+
+template<typename T>
+class Action : public Interactive {
+public:
+    Action(const string& t, Menu* p, T a) : Interactive(t), parent(p), action(a) {}
+
+    void enter() {
+        action();
+        move_up();
+    }
+
+    void move_down(uint) {}
+
+    void move_up() {
+        parent->enter();
+    }
 private:
-    vector<pair<string, void (*)()>> actions;
+    T action;
+    Menu* parent;
+};
+
+template<typename T>
+Action<T>* make_action(const string& t, Menu* p, T a) {
+    return new Action<T>(t, p, a);
+}
+
+template<typename T>
+class Parameter : public Interactive {
+public:
+    Parameter(const string& t, Menu* p, T& val) : Interactive(t), parent(p), value(val) {}
+
+    string get_title() const {
+        sstream title;
+        title << Interactive::get_title() << "\t\t";
+        title << value;
+
+        return title.str();
+    }
+
+    void enter() {
+        cout << "Enter new value for parameter " << Interactive::get_title() << ": ";
+        T val;
+        cin >> val;
+
+        if (!cin)
+            throw runtime_error("Paramter::enter(): error reading value from stdin");
+
+        value = val;
+        move_up();
+    }
+
+    void move_down(uint) {}
+
+    void move_up() {
+        parent->enter();
+    }
+private:
+    T& value;
     Menu* parent;
 };
 

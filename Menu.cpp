@@ -8,6 +8,8 @@
 
 Interactive::Interactive(const string& t) : title(t) {}
 
+Interactive::~Interactive() {}
+
 string Interactive::get_title() const {
     return title;
 }
@@ -16,50 +18,68 @@ string Interactive::get_title() const {
 
 Menu::Menu(const string& t, Menu* p) : Interactive(t), submenus(), active(0), parent(p) {}
 
-void Menu::print_options() const {
+Menu::~Menu() {
+    for (auto sub : submenus)
+        delete sub;
+    submenus.clear();
+}
+
+void Menu::enter() {
+    active = 0;
+
     for (uint i = 0U; i < submenus.size(); ++i)
-        cout << "[" << i + 1 << "] " << submenus.at(i)->get_title() << std::endl;
+        print_option(i + 1, submenus.at(i)->get_title());
 }
 
-void Menu::go_to(uint idx) {
-    if (active != 0)
-        active->go_to(idx);
+void Menu::move_down(uint idx) {
+    if (!is_active()) {
+        active->move_down(idx);
+        return;
+    }
 
-    if (idx > submenus.size())
-        throw out_of_range("Menu::go_to(): index greater than available menu entries");
+    if (idx == 0 || idx > submenus.size())
+        throw out_of_range("Menu::go_to(): no menu entry found for " + idx);
+
+    active = submenus.at(idx - 1);
+    active->enter();
 }
 
-void Menu::go_back() {
+void Menu::move_up() {
     if (active != 0)
-        active = 0;
+        active->move_up();
     else
-        parent->go_back();
+        parent->enter();
 }
 
 void Menu::add_submenu(Interactive* sub) {
     submenus.push_back(sub);
 }
 
-// MENULEAF IMPLEMENTATION
-
-MenuLeaf::MenuLeaf(const string& t, Menu* p) : Interactive(t), actions(), parent(p) {}
-
-void MenuLeaf::print_options() const {
-    for (uint i = 0U; i < actions.size(); ++i)
-        cout << "[" << i + 1 << "] " << actions.at(i).first << std::endl;
+const vector<Interactive*>& Menu::get_submenus() const {
+    return submenus;
 }
 
-void MenuLeaf::go_to(uint idx) {
-    if (idx > actions.size())
-        throw out_of_range("MenuLeaf::go_to(): index greater than available actions");
-
-    actions.at(idx).second();
+bool Menu::is_active() const {
+    return active == 0;
 }
 
-void MenuLeaf::go_back() {
-    parent->go_back();
+void Menu::print_option(uint idx, const string& str) const {
+    cout << "[" << idx << "] " << str << std::endl;
 }
 
-void MenuLeaf::add_action(const string& name, void (*action)()) {
-    actions.push_back(std::make_pair(name, action));
+// BIDIRECTIONALMENU IMPLEMENTATION
+
+BidirectionalMenu::BidirectionalMenu(const string& t, Menu* m) : Menu(t, m) {}
+
+void BidirectionalMenu::enter() {
+    Menu::enter();
+    cout << std::endl;
+    print_option(get_submenus().size() + 1, "Back");
+}
+
+void BidirectionalMenu::move_down(uint idx) {
+    if (is_active() && idx == get_submenus().size() + 1)
+        move_up();
+    else
+        Menu::move_down(idx);
 }
