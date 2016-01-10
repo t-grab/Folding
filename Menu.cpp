@@ -31,9 +31,9 @@ void Menu::enter() {
         print_option(i + 1, submenus.at(i)->get_title());
 }
 
-void Menu::move_down(uint idx) {
+void Menu::execute(uint idx) {
     if (!is_active()) {
-        active->move_down(idx);
+        active->execute(idx);
         return;
     }
 
@@ -77,9 +77,9 @@ void BidirectionalMenu::enter() {
     print_option(get_submenus().size() + 1, "Back");
 }
 
-void BidirectionalMenu::move_down(uint idx) {
+void BidirectionalMenu::execute(uint idx) {
     if (is_active() && idx == get_submenus().size() + 1)
         move_up();
     else
-        Menu::move_down(idx);
+        Menu::execute(idx);
 }

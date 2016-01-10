@@ -44,11 +44,11 @@ void Application::enter() {
     print_option(get_submenus().size() + 1, "Exit");
 }
 
-void Application::move_down(uint idx) {
+void Application::execute(uint idx) {
     if (is_active() && idx == get_submenus().size() + 1)
         running = false;
     else
-        Menu::move_down(idx);
+        Menu::execute(idx);
 }
 
 void Application::run() {

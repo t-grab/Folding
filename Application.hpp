@@ -16,7 +16,7 @@ public:
     bool is_running();
 
     void enter();
-    void move_down(uint);
+    void execute(uint);
 
     void run();
     void calculate_params();

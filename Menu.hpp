@@ -29,7 +29,7 @@ public:
     virtual string get_title() const;
 
     virtual void enter() = 0;
-    virtual void move_down(uint) = 0;
+    virtual void execute(uint) = 0;
     virtual void move_up() = 0;
 private:
     string title;
@@ -41,7 +41,7 @@ public:
     ~Menu();
 
     void enter();
-    void move_down(uint);
+    void execute(uint);
     void move_up();
 
     void add_submenu(Interactive*);
@@ -60,7 +60,7 @@ public:
     BidirectionalMenu(const string&, Menu*);
 
     void enter();
-    void move_down(uint);
+    void execute(uint);
 };
 
 template<typename T>
@@ -73,7 +73,7 @@ public:
         move_up();
     }
 
-    void move_down(uint) {}
+    void execute(uint) {}
 
     void move_up() {
         parent->enter();
@@ -102,7 +102,7 @@ public:
     }
 
     void enter() {
-        cout << "Enter new value for parameter " << Interactive::get_title() << ": ";
+        cout << "Enter new value for parameter \"" << Interactive::get_title() << "\": ";
         T val;
         cin >> val;
 
@@ -113,7 +113,7 @@ public:
         move_up();
     }
 
-    void move_down(uint) {}
+    void execute(uint) {}
 
     void move_up() {
         parent->enter();

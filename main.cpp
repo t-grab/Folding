@@ -8,8 +8,6 @@ const string SEQ36 = "000110011000001111111001100001100100";
 const string SEQ48 = "001001100110000011111111110000001100110010011111";
 const string SEQ50 = "11010101011110100010001000010001000101111010101011";
 
-// TODO: Rename move_down into execute!
-
 int main() {
     try {
         Application& app = Application::get_instance();
@@ -29,7 +27,7 @@ int main() {
                 cin >> command;
             }
 
-            app.move_down(command);
+            app.execute(command);
         }
 
         return 0;
