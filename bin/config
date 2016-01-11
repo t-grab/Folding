@@ -8,6 +8,7 @@ mutation_rate	0.05
 measure_diversity	0
 verbose_output	1
 max_runtime	60.0
+rscript	E:/Development/Compiler/R/3.2.3/bin/Rscript.exe
 
 SEQ20	10100110100101100101
 SEQ24	110010010010010010010011

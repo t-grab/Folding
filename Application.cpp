@@ -6,7 +6,8 @@
 
 Application::Application() : Menu("Foldings for the 2D-HP-model", 0),
     running(true), protein("10100110100101100101"), population_size(200), max_generations(100), selection(Tournament),
-    tournament_size(20), crossover_rate(0.2), mutation_rate(0.05), measure_diversity(false), verbose_output(true), max_runtime(60.0)
+    tournament_size(20), crossover_rate(0.2), mutation_rate(0.05), measure_diversity(false), verbose_output(true),
+    max_runtime(60.0), rscript()
 {
     auto run_func = [&]() { run(); };
     auto calc_params_func = [&]() { calculate_params(); };
@@ -76,6 +77,22 @@ void Application::run() {
 
     result.print();
 
+    uint time = std::clock();
+
+    sstream log_file_name;
+    log_file_name << "analysis_" << time << ".csv";
+    sstream pdf_file_name;
+    pdf_file_name << "evolution_" << time << ".pdf";
+
+    ofstream file;
+    file.open(log_file_name.str());
+    result.print(file, ",", false);
+    file.close();
+
+    sstream command;
+    command << "cmd /c " << rscript << " run_analysis.R \"" << log_file_name.str() << "\" " << pdf_file_name.str();
+    system(command.str().c_str());
+
     if (verbose_output)
         for (auto solution : result.fittest())
             std::cout << "Fitness: " << solution.fitness() << std::endl << solution;
@@ -131,6 +148,9 @@ void Application::load_config() {
 
     read<string>(config);
     max_runtime = read<double>(config);
+
+    read<string>(config);
+    rscript = read<string>(config);
 
     config.close();
 }

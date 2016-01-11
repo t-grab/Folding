@@ -4,7 +4,7 @@
 
 #include "Diversity.hpp"
 
-string Diversity::sep = ",";
+string Diversity::sep = "|";
 
 Diversity::Diversity(double m, double s) : mean(m), sd(s) {}
 

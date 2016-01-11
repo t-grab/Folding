@@ -8,6 +8,7 @@
 #include <iostream>
 #include <fstream>
 using std::ifstream;
+using std::ofstream;
 
 #include "algorithm.hpp"
 #include "Menu.hpp"
@@ -41,6 +42,7 @@ private:
     bool measure_diversity;
     bool verbose_output;
     double max_runtime;
+    string rscript;
 };
 
 template<typename T>
