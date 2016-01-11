@@ -90,7 +90,7 @@ void Application::run() {
     file.close();
 
     sstream command;
-    command << "cmd /c " << rscript << " run_analysis.R \"" << log_file_name.str() << "\" " << pdf_file_name.str();
+    command << "cmd /c " << rscript << " run_analysis.R " << log_file_name.str() << " " << pdf_file_name.str();
     system(command.str().c_str());
 
     if (verbose_output)
