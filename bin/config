@@ -9,6 +9,11 @@ measure_diversity	0
 verbose_output	1
 max_runtime	60.0
 rscript	E:/Development/Compiler/R/3.2.3/bin/Rscript.exe
+param_runs  2
+param_population_size   20
+param_max_generations   10
+param_crossover_rate    0.2
+param_mutation_rate 0.01
 
 SEQ20	10100110100101100101
 SEQ24	110010010010010010010011

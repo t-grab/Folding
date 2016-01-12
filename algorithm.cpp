@@ -22,7 +22,7 @@ Grid::Move replace(const Folding& folding, vector<Grid::Move>::iterator iter) {
 
 void add_generation_result(Result<Folding, double, Diversity>& result, const vector<Folding>& solutions, uint pop_size, bool measure_diversity) {
     double max_fitness = std::max_element(solutions.begin(), solutions.end())->fitness();
-    double avg_fitness = std::accumulate(solutions.begin(), solutions.end(), 0.0, accumulate_fitness) / pop_size;
+    double avg_fitness = std::accumulate(solutions.begin(), solutions.end(), 0.0, accumulate_fitness<Folding>) / pop_size;
 
     vector<Folding> best;
     for (auto& folding : solutions)
@@ -39,6 +39,14 @@ void add_generation_result(Result<Folding, double, Diversity>& result, const vec
     }
 }
 
-double accumulate_fitness(double acc, const Folding& folding) {
-    return acc + folding.fitness();
+void add_generation_result(Result<FoldingParams, double, double>& result, const vector<FoldingParams>& solutions, uint pop_size) {
+    double max_fitness = std::max_element(solutions.begin(), solutions.end())->fitness();
+    double avg_fitness = std::accumulate(solutions.begin(), solutions.end(), 0.0, accumulate_fitness<FoldingParams>) / pop_size;
+
+    vector<FoldingParams> best;
+    for (auto& params : solutions)
+        if (params.fitness() == max_fitness)
+            best.push_back(params);
+
+    result.add_generation(max_fitness, avg_fitness, best.begin(), best.end());
 }

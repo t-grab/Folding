@@ -7,7 +7,8 @@
 Application::Application() : Menu("Foldings for the 2D-HP-model", 0),
     running(true), protein("10100110100101100101"), population_size(200), max_generations(100), selection(Tournament),
     tournament_size(20), crossover_rate(0.2), mutation_rate(0.05), measure_diversity(false), verbose_output(true),
-    max_runtime(60.0), rscript()
+    max_runtime(60.0), rscript(), param_runs(10), param_population_size(50), param_max_generations(30),
+    param_crossover_rate(0.2), param_mutation_rate(0.2)
 {
     auto run_func = [&]() { run(); };
     auto calc_params_func = [&]() { calculate_params(); };
@@ -29,6 +30,10 @@ Application::Application() : Menu("Foldings for the 2D-HP-model", 0),
             settings->add_submenu(new Parameter<bool>("Measure Diversity", settings, measure_diversity));
             settings->add_submenu(new Parameter<bool>("Verbose output", settings, verbose_output));
             settings->add_submenu(new Parameter<double>("Maximum running time", settings, max_runtime));
+            settings->add_submenu(new Parameter<uint>("Parameter Tuning: Population size", settings, param_population_size));
+            settings->add_submenu(new Parameter<uint>("Parameter Tuning: Max generations", settings, param_max_generations));
+            settings->add_submenu(new Parameter<double>("Parameter Tuning: Crossover rate", settings, param_crossover_rate));
+            settings->add_submenu(new Parameter<double>("Parameter Tuning: Mutation rate", settings, param_mutation_rate));
     add_submenu(settings);
     add_submenu(make_action("Reload config file", this, load_config_func));
 
@@ -99,7 +104,29 @@ void Application::run() {
 }
 
 void Application::calculate_params() {
+    std::shared_ptr<string> ptr = std::make_shared<string>(protein);
+    Result<FoldingParams, double, double> result;
 
+    switch(selection) {
+        case FitnessProportional: {
+            selector::fitness_proportional<Fitness, select::SUS<double>> proportional(population_size, Fitness(), select::SUS<double>(population_size));
+            result = solve_params(ptr, param_population_size, population_size, param_max_generations, max_generations,
+                                  proportional, param_runs, param_crossover_rate, param_mutation_rate);
+            break;
+        }
+        case Tournament: {
+            selector::tournament<Fitness> tournament(population_size, tournament_size, Fitness());
+            result = solve_params(ptr, param_population_size, population_size, param_max_generations, max_generations,
+                                  tournament, param_runs, param_crossover_rate, param_mutation_rate);
+            break;
+        }
+        default:
+            throw runtime_error("Undefined selection mechanism");
+    }
+
+    result.print();
+    for (auto solution : result.fittest())
+        std::cout << "Fitness: " << solution.fitness() << std::endl << solution;
 }
 
 void Application::load_config() {
@@ -151,6 +178,21 @@ void Application::load_config() {
 
     read<string>(config);
     rscript = read<string>(config);
+
+    read<string>(config);
+    param_runs = read<uint>(config);
+
+    read<string>(config);
+    param_population_size = read<uint>(config);
+
+    read<string>(config);
+    param_max_generations = read<uint>(config);
+
+    read<string>(config);
+    param_crossover_rate = read<double>(config);
+
+    read<string>(config);
+    param_mutation_rate = read<double>(config);
 
     config.close();
 }

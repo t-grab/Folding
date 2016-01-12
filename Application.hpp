@@ -43,6 +43,12 @@ private:
     bool verbose_output;
     double max_runtime;
     string rscript;
+
+    uint param_runs;
+    uint param_population_size;
+    uint param_max_generations;
+    double param_crossover_rate;
+    double param_mutation_rate;
 };
 
 template<typename T>
