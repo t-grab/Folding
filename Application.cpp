@@ -13,6 +13,8 @@ Application::Application() : Menu("Foldings for the 2D-HP-model", 0),
     auto run_func = [&]() { run(); };
     auto calc_params_func = [&]() { calculate_params(); };
     auto load_config_func = [&]() { load_config(); };
+    auto set_fitness_proportional = [&]() { selection = FitnessProportional; };
+    auto set_tournament = [&]() { selection = Tournament; };
 
     add_submenu(make_action("Run", this, run_func));
     add_submenu(make_action("Calculate Parameters", this, calc_params_func));
@@ -20,10 +22,10 @@ Application::Application() : Menu("Foldings for the 2D-HP-model", 0),
             settings->add_submenu(new Parameter<string>("Protein chain", settings, protein));
             settings->add_submenu(new Parameter<uint>("Population size", settings, population_size));
             settings->add_submenu(new Parameter<uint>("Max generations", settings, max_generations));
-                BidirectionalMenu* selection = new BidirectionalMenu("Selection strategy", settings);
-                    selection->add_submenu(new Action<void(*)()>("Fitness Proportional", selection, 0));
-                    selection->add_submenu(new Action<void(*)()>("Tournament", selection, 0));
-            settings->add_submenu(selection);
+                BidirectionalMenu* selection_menu = new BidirectionalMenu("Selection strategy", settings);
+                    selection_menu->add_submenu(make_action("Fitness Proportional", selection_menu, set_fitness_proportional));
+                    selection_menu->add_submenu(make_action("Tournament", selection_menu, set_tournament));
+            settings->add_submenu(selection_menu);
             settings->add_submenu(new Parameter<uint>("Tournament size", settings, tournament_size));
             settings->add_submenu(new Parameter<double>("Crossover rate", settings, crossover_rate));
             settings->add_submenu(new Parameter<double>("Mutation rate", settings, mutation_rate));
@@ -97,6 +99,14 @@ void Application::run() {
     sstream command;
     command << "cmd /c " << rscript << " run_analysis.R " << log_file_name.str() << " " << pdf_file_name.str();
     system(command.str().c_str());
+
+    std::vector<Folding> fittest(result.fittest().begin(), result.fittest().end());
+    if (verbose_output && fittest.size() > 1U) {
+        cout << "Hamming distances between best candidates: " << std::endl;
+        for (uint i = 0U; i < (fittest.size() - 1); ++i)
+            for (uint j = i + 1; j < fittest.size(); ++j)
+                cout << "H(" << i << ", " << j << ") = " << fittest.at(i).hamming_distance(fittest.at(j)) << std::endl;
+    }
 }
 
 void Application::calculate_params() {
