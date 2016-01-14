@@ -115,6 +115,27 @@ void Folding::draw(ostream& out) const {
 }
 
 ostream& operator<<(ostream& stream, const Folding& folding) {
+    stream << "Genotype: ";
+    for (uint i = 0U; i < folding.genotype.size(); ++i) {
+        switch(folding.genotype.at(i)) {
+            case Grid::Move::LEFT:
+                stream << 'L';
+                break;
+            case Grid::Move::STRAIGHT:
+                stream << 'S';
+                break;
+            case Grid::Move::RIGHT:
+                stream << 'R';
+                break;
+            default:
+                throw std::runtime_error("operator<<(): unknown movement");
+        }
+    }
+
+    stream << std::endl
+           << "Fitness: " << folding.cached_fitness << std::endl
+           << "Conformation: " << std::endl;
+
     folding.draw(stream);
     return stream;
 }

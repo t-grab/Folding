@@ -80,7 +80,7 @@ void Application::run() {
             throw runtime_error("Undefined selection mechanism");
     }
 
-    result.print();
+    result.print(cout, "\t", verbose_output);
 
     uint time = std::clock();
 
@@ -97,10 +97,6 @@ void Application::run() {
     sstream command;
     command << "cmd /c " << rscript << " run_analysis.R " << log_file_name.str() << " " << pdf_file_name.str();
     system(command.str().c_str());
-
-    if (verbose_output)
-        for (auto solution : result.fittest())
-            std::cout << "Fitness: " << solution.fitness() << std::endl << solution;
 }
 
 void Application::calculate_params() {
@@ -124,9 +120,7 @@ void Application::calculate_params() {
             throw runtime_error("Undefined selection mechanism");
     }
 
-    result.print();
-    for (auto solution : result.fittest())
-        std::cout << "Fitness: " << solution.fitness() << std::endl << solution;
+    result.print(cout, "\t", true);
 }
 
 void Application::load_config() {
