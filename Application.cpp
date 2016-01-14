@@ -89,7 +89,7 @@ void Application::run() {
     sstream log_file_name;
     log_file_name << "analysis_" << time << ".csv";
     sstream pdf_file_name;
-    pdf_file_name << "evolution_" << time << ".pdf";
+    pdf_file_name << "evolution_" << time << ".png";
 
     ofstream file;
     file.open(log_file_name.str());

@@ -1,6 +1,6 @@
 library(ggplot2)
 
-print.evolution <- function(log_file, pdf_file) {
+print.evolution <- function(log_file, png_file) {
     log <- read.csv(log_file, header=T)
 
     log <- cbind(
@@ -11,7 +11,7 @@ print.evolution <- function(log_file, pdf_file) {
         )
     )
 
-    pdf(pdf_file)
+    png(png_file)
     print(ggplot(data=log, aes(x=Generation, y=Fitness, colour=Type)) + geom_line())
     dev.off()   
 }
