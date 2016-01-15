@@ -82,7 +82,7 @@ Result<Folding, double, Diversity> solve(shared_ptr<string> protein, uint pop_si
         run_time = static_cast<double>(std::clock() - start_time) / CLOCKS_PER_SEC;
         max_runtime = max_runtime - run_time;
         avg_loop_time = (gen * avg_loop_time + run_time) / (gen + 1);
-        if (avg_loop_time > max_runtime)
+        if (avg_loop_time * 2 > max_runtime)
             break;
     }
 

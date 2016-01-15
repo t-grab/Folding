@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.3)
 project(Folding)
 
-include_directories(E:/Development/Projekte/Evo/src/hpp)
+include_directories(C:/Dev/Projekte/Evo/src/hpp)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CMAKE_BINARY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/bin")

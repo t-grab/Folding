@@ -58,7 +58,7 @@ public:
         cached_fitness = 0.0;
         for (uint i = 0U; i < runs; ++i) {
             auto result = solve(protein, pop_size, max_gens, select, false, params[0], params[1], max_runtime);
-            cached_fitness += result.max() * result.fittest().size();
+            cached_fitness += result.max() * std::pow(static_cast<double>(result.fittest().size()), 0.25);
         }
         cached_fitness /= runs;
     }
